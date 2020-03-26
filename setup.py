@@ -23,13 +23,14 @@ with open("README.md", "r") as fh:
 
 setup(
     name="stadfangaskra-utils",
-    version="0.1.0",
     description="Icelandic Location Registry utils",
     author="Stefán Kjartansson",
     author_email="stefan.mar.kjartansson@gmail.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
+    use_scm_version=True,
+    setup_requires=["setuptools_scm"],
     url="https://github.com/StefanKjartansson/stadfangaskra-utils",
     install_requires=requires,
     classifiers=[
