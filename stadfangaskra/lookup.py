@@ -93,7 +93,8 @@ class Lookup:
         arr_house_nr: np.ndarray,
     ) -> np.ndarray:
         """
-        Looks up coordinates for arrays of post codes, streets & house numbers. Use when adding coordinates to relatively clean data.
+        Looks up coordinates for arrays of post codes, streets & house numbers. 
+        Use when adding coordinates to relatively clean data.
 
         :Example:
 

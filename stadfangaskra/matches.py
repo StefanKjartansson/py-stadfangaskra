@@ -15,8 +15,12 @@ class Match:
 def iter_matches(text: str) -> Iterator[Match]:
     """
     Finds address match candidates in text. The parsing algorithm
-    assumes that addresses are written in a common hierarchical
-    format, "Street number, postcode".
+    assumes that addresses are written in a common format, e.g.
+    "Street number, postcode".
+
+    This is a bit simplistic but should work for most semi-structured
+    data sets. It's not designed to be able to parse every possible
+    variation in existence.
 
     :param text: source text
     """
