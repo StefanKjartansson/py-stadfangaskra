@@ -57,9 +57,6 @@ def build_inner_lookup(df: pd.DataFrame) -> LookupDictT:
 
 
 class Lookup:
-    """
-    Lookup 
-    """
 
     data: LookupDictT
 
@@ -186,19 +183,13 @@ class Lookup:
 
         :Example:
 
-        >>> arr = [
-                'Laugavegur 22, 101 Reykjavík',
-                'Þórsgata 1, 101 Reykjavík',
-            ]
-        >>> l.hydrate_text_array(arr)
-
-
-
         >>> df = pd.DataFrame({"address": [
                 'Laugavegur 22, 101 Reykjavík',
                 'Þórsgata 1, 101 Reykjavík',
             ]})
-        >>> l.hydrate_text_array(arr)
+        >>> df[["postcode", "street", "house_nr", "lat", "lon", "municipality"]] = pd.DataFrame(
+                lookup.hydrate_text_array(df.address.values), index=df.index
+            )
 
         :param text: Array or List of text strings
         :returns: Structured Numpy array
@@ -212,6 +203,7 @@ class Lookup:
         municipality = np.zeros(arr_len, dtype="U30")
 
         for idx, s in enumerate(text):
+
             m = next(self.scan_text(s))
             if not m:
                 continue
