@@ -10,13 +10,15 @@ requires = [
 extras = {
     "dev": [
         "ipython",
-        "black",
         "coverage",
         "pytest-cov",
         "pytest-env",
         "pytest",
         "pylint",
-    ]
+    ],
+    'dev:python_version>="3.6"': [
+        "black"
+    ],
 }
 
 if int(setuptools.__version__.split(".", 1)[0]) < 18:
