@@ -1,5 +1,7 @@
 # py-stadfangaskra
 
+![Python package](https://github.com/StefanKjartansson/py-stadfangaskra/workflows/Python%20package/badge.svg)
+
 Utility library for working with the Icelandic address registry and pandas. Development is at a "scratching my own itch" stage.
 
 
@@ -33,3 +35,4 @@ some_df[["postcode", "street", "house_nr", "lat", "lon", "municipality"]] = pd.D
     lookup.hydrate_text_array(some_df.address.values), index=df.index
 )
 ```
+
