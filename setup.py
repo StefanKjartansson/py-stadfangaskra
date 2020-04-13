@@ -1,5 +1,6 @@
 # !/usr/bin/env python
 
+import setuptools
 from setuptools import find_packages, setup
 
 requires = [
@@ -17,6 +18,12 @@ extras = {
         "pylint",
     ]
 }
+
+if int(setuptools.__version__.split(".", 1)[0]) < 18:
+    if sys.version_info[0:2] < (3, 7):
+        requires.append("dataclasses")
+else:
+    extras[":python_version<'3.7'"] = ["dataclasses"]
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -39,6 +46,6 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: Implementation :: CPython",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.5",
     extras_require=extras,
 )
