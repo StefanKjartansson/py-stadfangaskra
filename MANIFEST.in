@@ -1,0 +1,2 @@
+global-exclude *.py[cod]
+prune tests/*.py
