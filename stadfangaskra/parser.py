@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import geopandas
 from pandas._typing import FilePathOrBuffer
 
 RENAMED = {
@@ -61,4 +62,5 @@ def parse(
     df["lat"] = df["lat"].str.replace(",", ".").astype(float)
     df["lon"] = df["lon"].str.replace(",", ".").astype(float)
 
-    return df.dropna()
+    df = df.dropna()
+    return geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df.lon, df.lat))

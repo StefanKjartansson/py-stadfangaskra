@@ -5,7 +5,8 @@ import setuptools
 from setuptools import find_packages, setup
 
 requires = [
-    "pandas",
+    "pandas>=1.0.3",
+    "geopandas>=0.7.0",
 ]
 
 extras = {
