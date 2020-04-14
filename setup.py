@@ -1,4 +1,5 @@
 # !/usr/bin/env python
+import sys
 
 import setuptools
 from setuptools import find_packages, setup
@@ -8,17 +9,8 @@ requires = [
 ]
 
 extras = {
-    "dev": [
-        "ipython",
-        "coverage",
-        "pytest-cov",
-        "pytest-env",
-        "pytest",
-        "pylint",
-    ],
-    'dev:python_version>="3.6"': [
-        "black"
-    ],
+    "dev": ["ipython", "coverage", "pytest-cov", "pytest-env", "pytest", "pylint",],
+    'dev:python_version>="3.6"': ["black"],
 }
 
 if int(setuptools.__version__.split(".", 1)[0]) < 18:
