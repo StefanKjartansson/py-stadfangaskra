@@ -21,7 +21,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip wheel twine
-        pip install .[test]
+        pip install .[all]
+        pip freeze
+    - name: Lint
+      run: black --check stadfangaskra
     - name: Pytest
       run: pytest
     - name: Test packaging
