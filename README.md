@@ -3,7 +3,7 @@
 ![Python package](https://github.com/StefanKjartansson/py-stadfangaskra/workflows/Python%20package/badge.svg)
 
 Utility library for working with the [Icelandic address registry][stadfangaskra], [pandas] & [geopandas]. The primary use-case is to
-hydrate address data.
+hydrate address data. It's fairly fast, filling in 10000 addresses in about 3-4 seconds.
 
 ### Installation
 
@@ -11,12 +11,12 @@ hydrate address data.
 
 #### Development
 
-FIX: Clone the [repository] and install `dev` extras.
+Clone the [repository] and install `dev` extras.
 
 ```bash
 $ git clone git@github.com:StefanKjartansson/py-stadfangaskra.git
 $ cd py-stadfangaskra
-# python3.6 & python3.8 are supported as well
+# python3.7 & python3.8 are supported as well
 $ python3.9 -m venv venv
 $ . venv/bin/activate
 $ pip install .[dev]
