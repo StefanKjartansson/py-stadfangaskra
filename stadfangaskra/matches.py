@@ -1,3 +1,4 @@
+# pylint: disable=too-many-boolean-expressions
 from dataclasses import dataclass
 from typing import Iterator, Optional
 

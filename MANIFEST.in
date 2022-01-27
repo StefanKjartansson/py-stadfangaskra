@@ -1,2 +1,4 @@
 global-exclude *.py[cod]
 prune tests/*.py
+include stadfangaskra/data/df.parquet.gzip
+include stadfangaskra/data/regions.parquet
