@@ -17,6 +17,34 @@ def is_valid_idx(x: Tuple[str, str, str, str]):
     return True
 
 
+def merge_tuples(
+    sq: Tuple[
+        Union[str, slice], Union[str, slice], Union[str, slice], Union[str, slice]
+    ],
+    res: Tuple,
+) -> Tuple[str, str, str, str]:
+    """Replace tuple values where the index is an empty slice.
+
+    Behaviour change in pandas 1.4, in previous versions the full index was returned.
+    Post 1.4, building it manually is required.
+
+    :param sq: query tuple
+    :type sq: Tuple[ Union[str, slice], Union[str, slice], Union[str, slice], Union[str, slice] ]
+    :param res: index part
+    :type res: Tuple
+    :return: Full lookup value
+    :rtype: Tuple[str, str, str, str]
+    """
+    out = list(sq)
+    for idx in range(len(sq)):
+        if sq[idx] == slice(None):
+            try:
+                out[idx] = res[idx]
+            except IndexError:
+                pass
+    return tuple(out)
+
+
 def _build_municipality_street_to_postcode(
     df: pd.DataFrame,
 ) -> Dict[Tuple[str, str], str]:
@@ -206,9 +234,10 @@ class Lookup:
                 # if it's already been found
                 if len(res) == 1:
                     # mark the returned tuple for addition to the found indexes
-                    found_missing.add(res.index[0])
+                    res_val = merge_tuples(sq, res.index[0])
+                    found_missing.add(res_val)
                     # create a new row for the missing data
-                    missing_data.append(res.index[0] + tuple(row))
+                    missing_data.append(res_val + tuple(row))
                     # mark old data query index for deletion
                     not_found_qidx.add(qidx)
 
