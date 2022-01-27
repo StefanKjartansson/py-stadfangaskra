@@ -1,5 +1,4 @@
 import logging
-
 from typing import List
 
 import pandas as pd
@@ -61,7 +60,7 @@ class SDAccessor:  # pylint: disable=too-few-public-methods
         addrs = qf[query_column].values
 
         res = lookup.query(addrs)
-        logger.debug("len after lookup", len(res))
+        logger.debug("len after lookup: %d", len(res))
 
         qf.reset_index(inplace=True)
         qf["query"] = qf[query_column]
@@ -69,7 +68,7 @@ class SDAccessor:  # pylint: disable=too-few-public-methods
         res.set_index("query", inplace=True)
 
         res = qf.join(res).sort_values("order")
-        logger.debug("len after joining on query", len(res))
+        logger.debug("len after joining on query: %d", len(res))
 
         cols.extend(
             [
@@ -85,7 +84,7 @@ class SDAccessor:  # pylint: disable=too-few-public-methods
         if original_index:
             res.set_index(original_index, inplace=True)
             res = res.loc[~res.index.duplicated(keep="first")]
-            logger.debug("len after removing duplicated indices", len(res))
+            logger.debug("len after removing duplicated indices: %d", len(res))
         else:
             res.reset_index(inplace=True)
 

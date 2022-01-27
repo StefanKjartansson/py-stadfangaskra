@@ -79,7 +79,7 @@ class Lookup:
             .reset_index(drop=True)
             .values
         )
-    
+
     def text_to_vec(  # pylint: disable=too-many-branches
         self, s: str
     ) -> Tuple[str, str, str, str]:
@@ -151,7 +151,7 @@ class Lookup:
             street or "",
             (house_nr or "").upper(),
         )
-        
+
     def __query_vector_dataframe(self, q: pd.DataFrame) -> pd.DataFrame:
         """Given a data frame with index:
           [municipality, postcode, street_nominative, house_nr]
@@ -193,7 +193,7 @@ class Lookup:
                 # this point it is clear that a key with an empty string could not
                 # be found in the index.
                 # Replace all empty strings with a None slice and query the address dataframe
-                sq = tuple((i or slice(None) for i in tvec))                
+                sq = tuple((i or slice(None) for i in tvec))
                 # NOTE: Author has not founded a vectorized approach to querying the
                 # source dataframe and matching the query index back with the result.
                 try:
@@ -300,7 +300,7 @@ class Lookup:
         q = q.set_index(keys=self.df.index.names)
 
         return self.__query_vector_dataframe(q)
-    
+
     def query(  # pylint: disable=too-many-locals
         self, text: Union[str, List[str], np.ndarray]
     ) -> geopandas.GeoDataFrame:
