@@ -23,8 +23,6 @@ jobs:
         python -m pip install --upgrade pip wheel twine
         pip install .[all]
         pip freeze
-    - name: Lint
-      run: black --check stadfangaskra
     - name: Pytest
       run: pytest
     - name: Test packaging
