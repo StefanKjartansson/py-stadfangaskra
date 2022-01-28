@@ -212,8 +212,19 @@ class Lookup:
 
             missing_data = []
 
+            miss_df = miss_df.loc[miss_df.index.map(is_valid_idx)]
+
+            # as the address dataframe is fairly large, constrict the search
+            # space to the records loosely matching what's being queried for. For
+            # large datasets, this speeds up querying considerably.
+            search_selector = [
+                slice(None) if (i[0] == "" and len(i) == 1) else i
+                for i in [i.values.tolist() for i in miss_df.index.levels]
+            ]
+            search_space = self.df.loc[tuple(search_selector), :]
+
             # iterate rows of valid missing indexes
-            for tvec, row in miss_df.loc[miss_df.index.map(is_valid_idx)].iterrows():
+            for tvec, row in miss_df.iterrows():
                 qidx = row["qidx"]
 
                 # the index is 4 levels, [municipality, postcode, street, house_nr],
@@ -225,7 +236,7 @@ class Lookup:
                 # NOTE: Author has not founded a vectorized approach to querying the
                 # source dataframe and matching the query index back with the result.
                 try:
-                    res = self.df.loc[sq]
+                    res = search_space.loc[sq]
                 except KeyError:
                     continue
 
@@ -238,6 +249,7 @@ class Lookup:
                     found_missing.add(res_val)
                     # create a new row for the missing data
                     missing_data.append(res_val + tuple(row))
+
                     # mark old data query index for deletion
                     not_found_qidx.add(qidx)
 
