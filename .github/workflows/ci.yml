@@ -41,6 +41,20 @@ jobs:
       run: pytest
     - name: Test packaging
       run: python setup.py sdist bdist_wheel
+  
+  sync-database:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'sync-database')    
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Merge into master
+        uses: devmasx/merge-branch@master
+        with:
+          type: now          
+          target_branch: master
+          github_token: ${{ github.token }}
+
   release:
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'created'
