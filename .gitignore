@@ -76,4 +76,6 @@ venv/
 
 .DS_Store
 
-STADFANG.dsv.zip
+source.csv
+benchmark*
+stadfangaskra/version.py

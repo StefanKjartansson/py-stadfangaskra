@@ -1,68 +1,55 @@
-import pandas as pd
+#  pylint: disable=redefined-outer-name
 import pytest
 from numpy import testing
-from stadfangaskra import Lookup
 
-lookup = None
+from stadfangaskra import lookup
 
-
-def setup_module(module):  # pylint: disable=unused-argument
-    global lookup  # pylint: disable=global-statement
-    if lookup is None:
-        lookup = Lookup.from_resource()
+my_text = """
+Nóatún Austurveri er að Háaleitisbraut 68, 103 Reykjavík en ég bý á Laugavegi 11, 101 Reykjavík
+""".strip()
 
 
-def test_array() -> None:
-    df = pd.DataFrame(
-        {
-            "postcode": [101, 201],
-            "street": ["Laugavegur", "Hagasmári"],
-            "house_nr": ["11", "1"],
-        }
+def test_edge_cases() -> None:
+    res = lookup.query("Hagasmári 1, 201 Kópavogi")
+    assert len(res) == 1
+
+
+def test_query_dataframe(structured_df):
+    res = lookup.query_dataframe(structured_df)
+    testing.assert_array_equal(structured_df.postcode.values, res.postcode.values)
+    testing.assert_array_equal(
+        res.street_nominative.values, ["Laugavegur", "Hagasmári", "Laugavegur"]
     )
-    df["lat"], df["lon"] = lookup.coordinates_from_array(
-        df.postcode.values, df.street.values, df.house_nr.values,
+
+
+def test_query_text_body() -> None:
+    results = lookup.query_text_body(my_text)
+    testing.assert_array_equal(results.postcode.values, ["103", "101"])
+    testing.assert_array_equal(
+        results.street_nominative.values, ["Háaleitisbraut", "Laugavegur"]
     )
+
+
+def test_multiple_matches() -> None:
+    res = lookup.query("Hafnarbraut 1")
+    print(res)
+    testing.assert_array_equal(res.postcode, [""])
+    testing.assert_array_equal(res.municipality, [""])
+    testing.assert_array_equal(res.house_nr, [""])
+    testing.assert_array_equal(res.geometry, [None])
 
 
 @pytest.mark.parametrize(
-    "args",
+    "query,postcode,municipality,house_nr",
     [
-        (101,),
-        (101, "Laugavegur"),
-        (101, "Laugavegur", 22),
-        (101, "Laugavegi"),
-        (101, "Laugavegi", 22),
-        (101, "laugavegi", 22),
+        ("Lindarbraut 25, Seltjarnarnesbær", "170", "Seltjarnarnes", "25"),
     ],
 )
-def test_single(args) -> None:
-    assert lookup.single(*args)
-
-
-def test_case_sensitive():
-    assert lookup.single(101, "Laugavegi", 22) == lookup.single(101, "laugavegi", 22)
-
-
-def test_scan_text():
-    text = """
-    Einu sinni bjó ég á Háaleitisbraut 68, 103 Reykjavík en
-    svo flutti ég á Laugavegi 11, 101 Reykjavík
-    """
-    res = list(lookup.scan_text(text))
-    assert len(res) == 2
-
-
-def test_hydrate_text_array() -> None:
-    df = pd.DataFrame(
-        {"address": ["Laugavegur 22, 101 Reykjavík", "Hagasmári 1, 201 Kópavogi",]}
-    )
-
-    df[["postcode", "street", "house_nr", "lat", "lon", "municipality"]] = pd.DataFrame(
-        lookup.hydrate_text_array(df.address.values), index=df.index
-    )
-
-    testing.assert_array_equal(df.postcode.values, [101, 201])
-    testing.assert_array_equal(df.street.values, ["Laugavegur", "Hagasmári"])
-    testing.assert_array_equal(df.house_nr.values, ["22", "1"])
-    testing.assert_array_equal(df.municipality.values, ["Reykjavík", "Kópavogur"])
+def test_weird_cases(
+    query: str, postcode: str, municipality: str, house_nr: str
+) -> None:
+    res = lookup.query(query)
+    print(res)
+    testing.assert_array_equal(res.postcode, [postcode])
+    testing.assert_array_equal(res.municipality, [municipality])
+    testing.assert_array_equal(res.house_nr, [house_nr])
