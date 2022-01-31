@@ -21,12 +21,12 @@ def merge_tuples(
     sq: Tuple[
         Union[str, slice], Union[str, slice], Union[str, slice], Union[str, slice]
     ],
-    res: Tuple,
+    res: pd.MultiIndex,
 ) -> Tuple[str, str, str, str]:
     """Replace tuple values where the index is an empty slice.
 
     Behaviour change in pandas 1.4, in previous versions the full index was returned.
-    Post 1.4, building it manually is required.
+    Post 1.4, pandas returns only the missing levels.
 
     :param sq: query tuple
     :type sq: Tuple[ Union[str, slice], Union[str, slice], Union[str, slice], Union[str, slice] ]
@@ -36,12 +36,9 @@ def merge_tuples(
     :rtype: Tuple[str, str, str, str]
     """
     out = list(sq)
-    for idx in range(len(sq)):
-        if sq[idx] == slice(None):
-            try:
-                out[idx] = res[idx]
-            except IndexError:
-                pass
+    for n in res.names:
+        idx = INDEX_COLS.index(n)
+        out[idx] = res.get_level_values(n)[0]
     return tuple(out)
 
 
@@ -207,6 +204,7 @@ class Lookup:
             found_missing = set(found.values)
             # get unique set of missing queries
             miss_df = q.loc[missing].drop_duplicates()
+
             # keep track of query idx that have not been found
             not_found_qidx = set()
 
@@ -219,8 +217,12 @@ class Lookup:
             # large datasets, this speeds up querying considerably.
             search_selector = [
                 slice(None) if (i[0] == "" and len(i) == 1) else i
-                for i in [i.values.tolist() for i in miss_df.index.levels]
+                for i in [
+                    i.values.tolist()
+                    for i in miss_df.index.remove_unused_levels().levels
+                ]
             ]
+
             search_space = self.df.loc[tuple(search_selector), :]
 
             # iterate rows of valid missing indexes
@@ -245,7 +247,7 @@ class Lookup:
                 # if it's already been found
                 if len(res) == 1:
                     # mark the returned tuple for addition to the found indexes
-                    res_val = merge_tuples(sq, res.index[0])
+                    res_val = merge_tuples(sq, res.index)
                     found_missing.add(res_val)
                     # create a new row for the missing data
                     missing_data.append(res_val + tuple(row))
