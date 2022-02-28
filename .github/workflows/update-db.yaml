@@ -23,8 +23,7 @@ jobs:
       with:
           token: ${{ secrets.PAT }}
           commit-message: Update database
-          labels:
-            - sync-database
+          labels: sync-database
           title: Update database
           body: |
             - Update database
